@@ -1,0 +1,235 @@
+<template>
+  <div class="listDetail">
+    <p class="listDetail_title">{{curPos}}</p>
+    <ul v-show='showBol'>
+      <li v-for='(value, key, index) of map' :key="index">
+        <label><em>*</em><span>{{value}}:</span></label>
+        <p>{{detail[key]}}</p>
+      </li>
+    </ul>
+    <a href="javascript:;" class="contactBtn" @click="contactNow" v-show='showBol'>立即联系</a>
+  </div>
+</template>
+
+<script>
+import {getUrlParams, IsPosInteNum} from 'common/js/utils.js'
+import {getTechDetail, getScienDetail, getPatentDetail, getTalentDetail, getExpertDetail} from 'api/index.js'
+const techMap = {
+  'Name': '需求名称',
+  'InvestmentScale': '拟投资规模',
+  'InstitutionName': '单位名称',
+  'IndustryField': '行业领域',
+  'CoopWay': '拟合作方式',
+  'CName': '联系人',
+  'CMobile': '手机号',
+  'CEmail': '邮箱',
+  'Introduction': '技术需求介绍'
+}
+const scienMap = {
+  'Name': '成果名称',
+  'InstitutionName': '成果单位',
+  'IndustryField': '行业领域',
+  'CoopWay': '拟合作方式',
+  'Introduction': '科技成果介绍',
+  'CName': '联系人',
+  'CMobile': '手机号',
+  'CEmail': '邮箱'
+}
+const patentMap = {
+  'Name': '专利名称',
+  'Patentee': '专利权人',
+  'IndustryField': '行业领域',
+  'CoopWay': '拟合作方式',
+  'Introduction': '专利成果介绍',
+  'CName': '联系人',
+  'CMobile': '手机号',
+  'CEmail': '邮箱'
+}
+const talentMap = {
+  'Position': '职位名称',
+  'ProfessionalTitle': '职称要求',
+  'IndustryField': '行业领域',
+  'JobRequirement': '职位要求',
+  'JobDuties': '工作职责',
+  'CName': '联系人',
+  'CMobile': '手机号',
+  'CEmail': '邮箱'
+}
+const expertMap = {
+  'Name': '专家姓名',
+  'InstitutionName': '所在单位',
+  'IndustryField': '行业领域',
+  'CMobile': '手机号',
+  'CEmail': '邮箱',
+  'ResearchDirection': '研究方向',
+  'ProfessionalTitle': '职称',
+  'Introduction': '个人介绍'
+}
+export default {
+  name: 'LibDetail',
+  props: {
+    curPos: String,
+    libType: String
+  },
+  data () {
+    return {
+      id: 0,
+      detail: {},
+      map: {},
+      showBol: false
+    }
+  },
+  methods: {
+    getDetailSucc (res) {
+      const data = res.Data
+      if (data === null || data === []) {
+        window.location.href = 'page404.html'
+      }
+      this.detail = data
+      this.showBol = true
+    },
+    contactNow () {
+      this.$emit('contact')
+    }
+  },
+  created () {
+    const params = getUrlParams()
+    this.id = IsPosInteNum(parseInt(params['id'])) ? parseInt(params['id']) : this.id
+    if (this.id === 0) {
+      window.location.href = 'page404.html'
+    }
+    const type = this.libType
+    if (type === 'tech') {
+      this.map = techMap
+      getTechDetail(this.id).then((res) => {
+        if (res.Code === 0 && res.Result) {
+          this.getDetailSucc(res)
+        } else if (res.Code === 500) {
+          window.location.href = '/page500.html'
+        } else {
+          this.$message({
+            message: res.ErrorMsg,
+            type: 'error',
+            showClose: true
+          })
+        }
+      })
+    } else if (type === 'scien') {
+      this.map = scienMap
+      getScienDetail(this.id).then((res) => {
+        if (res.Code === 0 && res.Result) {
+          this.getDetailSucc(res)
+        } else if (res.Code === 500) {
+          window.location.href = '/page500.html'
+        } else {
+          this.$message({
+            message: res.ErrorMsg,
+            type: 'error',
+            showClose: true
+          })
+        }
+      })
+    } else if (type === 'patent') {
+      this.map = patentMap
+      getPatentDetail(this.id).then((res) => {
+        if (res.Code === 0 && res.Result) {
+          this.getDetailSucc(res)
+        } else if (res.Code === 500) {
+          window.location.href = '/page500.html'
+        } else {
+          this.$message({
+            message: res.ErrorMsg,
+            type: 'error',
+            showClose: true
+          })
+        }
+      })
+    } else if (type === 'talent') {
+      this.map = talentMap
+      getTalentDetail(this.id).then((res) => {
+        if (res.Code === 0 && res.Result) {
+          this.getDetailSucc(res)
+        } else if (res.Code === 500) {
+          window.location.href = '/page500.html'
+        } else {
+          this.$message({
+            message: res.ErrorMsg,
+            type: 'error',
+            showClose: true
+          })
+        }
+      })
+    } else if (type === 'expert') {
+      this.map = expertMap
+      getExpertDetail(this.id).then((res) => {
+        if (res.Code === 0 && res.Result) {
+          this.getDetailSucc(res)
+        } else if (res.Code === 500) {
+          window.location.href = '/page500.html'
+        } else {
+          this.$message({
+            message: res.ErrorMsg,
+            type: 'error',
+            showClose: true
+          })
+        }
+      })
+    }
+  }
+}
+</script>
+
+<style lang='stylus' scoped>
+  .listDetail
+    float right
+    width 910px
+    padding-bottom 66px
+    min-height 852px
+    border-radius 5px
+    background #fff
+    box-sizing border-box
+    .listDetail_title
+      height 50px
+      line-height 50px
+      text-indent 20px
+      font-size 18px
+      color #333
+      font-weight bold
+      border-bottom 1px solid #e8e8e8
+    ul
+      margin 0 17px 0 30px
+      li
+        margin-top 20px
+        overflow hidden
+        font-size 14px
+        color #666
+        >label
+          float left
+          width 104px
+          text-align left
+          line-height 20px
+          em
+            float left
+            margin-right 3px
+            color #C9151E
+            font-weight bold
+          span
+            float left
+            font-weight bold
+        p
+          float left
+          margin-left 4px
+          width 755px
+          line-height 20px
+    .contactBtn
+      display block
+      margin 29px auto 0px
+      width 128px
+      height 32px
+      line-height 32px
+      text-align center
+      border-radius 16px
+      font-size 14px
+      color #fff
+      background #C9151E
+</style>
